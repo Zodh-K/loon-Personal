@@ -1,0 +1,49 @@
+#!name=彩云天气
+#!desc=过滤广告，解锁ro版本
+#!openUrl=https://apps.apple.com/app/id1067198688
+#!author=RuCu6[https://github.com/RuCu6],苍井灰灰[https://github.com/wf021325]
+#!homepage=https://raw.githubusercontent.com/RuCu6/Loon/refs/heads/main/Plugins/caiyun.plugin
+#!icon=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/CaiYun.png
+#!date=2024-09-08 10:30
+
+[Rule]
+# 上传信息
+DOMAIN, abyss.cyapi.cn, REJECT
+DOMAIN, ad.cyapi.cn, REJECT
+DOMAIN, gather.colorfulclouds.net, REJECT
+
+[Rewrite]
+# 普通版开屏广告(此广告不定时出现)
+^https:\/\/ad\.cyapi\.cn\/v2\/req\?app_name=weather - reject-dict
+# 7.1.9 限时福利Svip
+^https:\/\/biz\.cyapi\.cn\/p\/v1\/trial_card\/info - reject-dict
+# 7.2.0普通版修改VIP后提示账号迁移
+^https:\/\/biz\.cyapi\.cn\/api\/v1\/token\/device$ - reject-dict
+
+# 亲友卡
+^https:\/\/biz\.cyapi\.cn\/p\/v1\/entries - reject-dict
+# 左上角+进去推荐
+^https:\/\/starplucker\.cyapi\.cn\/v3\/config$ - reject-dict
+
+# 通知
+^https:\/\/starplucker\.cyapi\.cn\/v3\/notification\/message_center - reject-dict
+# 会员限时弹窗
+^https:\/\/starplucker\.cyapi\.cn\/v3\/config\/cypage\/home\/conditions\/local$ - reject-dict
+^https:\/\/starplucker\.cyapi\.cn\/v3\/config\/cypage\/home_activity\/conditions$ - reject-dict
+^https:\/\/starplucker\.cyapi\.cn\/v3\/config\/cypage\/40day\/conditions\/local$ - reject-dict
+
+
+[Script]
+# 解锁新版VIP（7.20.0之后）
+http-response ^https:\/\/biz\.cyapi\.cn\/(api\/v1\/user_detail|p\/v1\/vip_info|v2\/user) script-path = https://raw.githubusercontent.com/Zodh-K/loon-Personal/refs/heads/main/plugins/cy.js, requires-body = true, tag = cy_mine
+# 底栏控制项目 主页图标 天气助手 彩云AI
+http-response ^https:\/\/api\.caiyunapp\.com\/v1\/activity\? script-path = https://raw.githubusercontent.com/Zodh-K/loon-Personal/refs/heads/main/plugins/cy.js, requires-body = true, tag = cy_tab1
+# 赏叶赏花
+http-response ^https:\/\/wrapper\.cyapi\.cn\/v1\/activity\? script-path = https://raw.githubusercontent.com/Zodh-K/loon-Personal/refs/heads/main/plugins/cy.js, requires-body = true, tag = cy_tab2
+# 卫星云图 48小时预报
+http-request ^https:\/\/wrapper\.cyapi\.cn\/v1\/(nafp\/origin_images|satellite)\? script-path = https://raw.githubusercontent.com/Zodh-K/loon-Personal/refs/heads/main/plugins/cy.js, timeout=60, tag=caiyun
+
+
+
+[MITM]
+hostname = api.caiyunapp.com, *.cyapi.cn
